@@ -1,21 +1,935 @@
-/* VOSPIROG — CATEGORY MENU / Cloudflare Pages */
-(function(){'use strict';
-var BREAKPOINT=1100;
-var CATEGORIES=[{title:'Сытные пироги',target:'sit'},{title:'Сладкие пироги',target:'slad'},{title:'Пирожки',target:null},{title:'Десерты',target:null},{title:'Напитки',target:null}];
-var state={menu:null,placeholder:null,items:[],sections:[],menuTop:0,menuHeight:64,isFixed:false,initialized:false,raf:0};
-function y(){return window.pageYOffset||document.documentElement.scrollTop||0}
-function target(id){if(!id)return null;var e=document.getElementById(id);if(!e){try{e=document.querySelector('[name="'+CSS.escape(id)+'"]')}catch(_){e=document.querySelector('[name="'+id+'"]')}}return e||null}
-function active(item){state.items.forEach(function(x){x.classList.remove('is-active')});if(item)item.classList.add('is-active')}
-function collect(){state.sections=[];state.items.forEach(function(item){var id=item.getAttribute('data-target');if(!id)return;var t=target(id);if(t)state.sections.push({item:item,target:t})})}
-function spy(){if(!state.sections.length||!state.menu)return;var pos=y(),h=state.menu.offsetHeight||state.menuHeight,check=pos+h+80,current=state.sections[0];state.sections.forEach(function(s){var top=s.target.getBoundingClientRect().top+pos;if(top<=check)current=s});if(current)active(current.item)}
-function clickItem(ev){var item=ev.currentTarget,id=item.getAttribute('data-target');if(!id)return;var t=target(id);if(!t){console.warn('VP MENU: не найден #'+id);return}ev.preventDefault();ev.stopPropagation();active(item);var top=t.getBoundingClientRect().top+y();var offset=(state.menu.offsetHeight||state.menuHeight)+20;window.scrollTo({top:Math.max(0,top-offset),behavior:'smooth'})}
-function create(){var old=document.querySelector('.vp-category-menu');if(old)return old;var menu=document.createElement('div');menu.className='vp-category-menu';menu.setAttribute('data-vp-cloudflare-menu','1');var inner=document.createElement('div');inner.className='vp-category-menu__inner';CATEGORIES.forEach(function(cat,i){var b=document.createElement('button');b.type='button';b.className='vp-category-menu__item'+(i===0?' is-active':'');if(cat.target)b.setAttribute('data-target',cat.target);b.textContent=cat.title;inner.appendChild(b)});menu.appendChild(inner);var sit=document.getElementById('sit');if(sit&&sit.parentNode)sit.parentNode.insertBefore(menu,sit);else{var ar=document.getElementById('allrecords');if(ar)ar.insertBefore(menu,ar.firstChild);else document.body.insertBefore(menu,document.body.firstChild)}return menu}
-function recalc(){if(!state.menu||state.isFixed)return;state.menuTop=state.menu.getBoundingClientRect().top+y();state.menuHeight=state.menu.offsetHeight||64;if(state.placeholder)state.placeholder.style.height=state.menuHeight+'px'}
-function unfix(){if(!state.menu)return;state.isFixed=false;state.menu.classList.remove('vp-menu-fixed');if(state.placeholder){state.placeholder.classList.remove('vp-placeholder-active');state.placeholder.style.height='0px'}}
-function sticky(){if(!state.menu)return;if(innerWidth<BREAKPOINT){unfix();return}if(y()>=state.menuTop&&!state.isFixed){state.isFixed=true;state.menuHeight=state.menu.offsetHeight||64;if(state.placeholder){state.placeholder.style.height=state.menuHeight+'px';state.placeholder.classList.add('vp-placeholder-active')}state.menu.classList.add('vp-menu-fixed')}else if(y()<state.menuTop&&state.isFixed)unfix()}
-function schedule(){if(state.raf)return;state.raf=requestAnimationFrame(function(){state.raf=0;sticky();spy()})}
-function bind(){state.items.forEach(function(item){if(item.getAttribute('data-vp-bound')==='1')return;item.setAttribute('data-vp-bound','1');item.addEventListener('click',clickItem)});window.addEventListener('scroll',schedule,{passive:true});window.addEventListener('resize',function(){unfix();setTimeout(function(){recalc();collect();sticky();spy()},0)},{passive:true})}
-function init(){if(state.initialized)return;var menu=create();if(!menu)return;state.menu=menu;state.placeholder=document.createElement('div');state.placeholder.className='vp-menu-placeholder';menu.parentNode.insertBefore(state.placeholder,menu);state.items=Array.prototype.slice.call(menu.querySelectorAll('.vp-category-menu__item'));collect();recalc();bind();sticky();spy();state.initialized=true}
-function start(){init();[300,800,1500,2500].forEach(function(d){setTimeout(function(){if(!state.initialized)init();collect();recalc();sticky();spy()},d)})}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+(function(){
+
+'use strict';
+
+
+/* =========================================================
+   CONFIG
+   ========================================================= */
+
+var CATEGORIES = [
+
+    {
+        title: 'Сытные пироги',
+        target: 'sit'
+    },
+
+    {
+        title: 'Сладкие пироги',
+        target: 'slad'
+    },
+
+    {
+        title: 'Пирожки',
+        target: null
+    },
+
+    {
+        title: 'Десерты',
+        target: null
+    },
+
+    {
+        title: 'Напитки',
+        target: null
+    }
+
+];
+
+
+var state = {
+
+    menu: null,
+
+    placeholder: null,
+
+    items: [],
+
+    sections: [],
+
+    menuTop: 0,
+
+    menuHeight: 64,
+
+    isFixed: false,
+
+    initialized: false,
+
+    raf: 0
+
+};
+
+
+/* =========================================================
+   SCROLL
+   ========================================================= */
+
+function getScrollY(){
+
+    return (
+        window.pageYOffset ||
+        document.documentElement.scrollTop ||
+        0
+    );
+
+}
+
+
+/* =========================================================
+   FIND TARGET
+   ========================================================= */
+
+function findTarget(id){
+
+    if(!id){
+
+        return null;
+
+    }
+
+
+    var element =
+        document.getElementById(id);
+
+
+    if(!element){
+
+        try{
+
+            element =
+                document.querySelector(
+                    '[name="' +
+                    CSS.escape(id) +
+                    '"]'
+                );
+
+        }catch(e){
+
+            element =
+                document.querySelector(
+                    '[name="' +
+                    id +
+                    '"]'
+                );
+
+        }
+
+    }
+
+
+    return element || null;
+
+}
+
+
+/* =========================================================
+   ACTIVE
+   ========================================================= */
+
+function setActive(item){
+
+    state.items.forEach(
+        function(element){
+
+            element.classList.remove(
+                'is-active'
+            );
+
+        }
+    );
+
+
+    if(item){
+
+        item.classList.add(
+            'is-active'
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   COLLECT SECTIONS
+   ========================================================= */
+
+function collectSections(){
+
+    state.sections = [];
+
+
+    state.items.forEach(
+        function(item){
+
+            var id =
+                item.getAttribute(
+                    'data-target'
+                );
+
+
+            if(!id){
+
+                return;
+
+            }
+
+
+            var target =
+                findTarget(id);
+
+
+            if(!target){
+
+                return;
+
+            }
+
+
+            state.sections.push({
+
+                item: item,
+
+                target: target,
+
+                id: id
+
+            });
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   SCROLL SPY
+   ========================================================= */
+
+function updateActiveCategory(){
+
+    if(
+        !state.sections.length ||
+        !state.menu
+    ){
+
+        return;
+
+    }
+
+
+    var scrollPosition =
+        getScrollY();
+
+
+    var menuHeight =
+        state.menu.offsetHeight ||
+        state.menuHeight;
+
+
+    var checkPosition =
+        scrollPosition +
+        menuHeight +
+        80;
+
+
+    var current =
+        state.sections[0];
+
+
+    state.sections.forEach(
+        function(section){
+
+            var sectionTop =
+                section.target
+                    .getBoundingClientRect()
+                    .top +
+                scrollPosition;
+
+
+            if(
+                sectionTop <=
+                checkPosition
+            ){
+
+                current =
+                    section;
+
+            }
+
+        }
+    );
+
+
+    if(current){
+
+        setActive(
+            current.item
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   MENU CLICK
+   ========================================================= */
+
+function handleCategoryClick(event){
+
+    var item =
+        event.currentTarget;
+
+
+    var targetId =
+        item.getAttribute(
+            'data-target'
+        );
+
+
+    /*
+     * Эти пункты пока без якорей.
+     */
+
+    if(!targetId){
+
+        return;
+
+    }
+
+
+    var target =
+        findTarget(
+            targetId
+        );
+
+
+    if(!target){
+
+        console.warn(
+            'VP MENU: не найден #' +
+            targetId
+        );
+
+        return;
+
+    }
+
+
+    event.preventDefault();
+
+    event.stopPropagation();
+
+
+    setActive(
+        item
+    );
+
+
+    var targetTop =
+        target
+            .getBoundingClientRect()
+            .top +
+        getScrollY();
+
+
+    var offset =
+        (
+            state.menu.offsetHeight ||
+            state.menuHeight
+        ) +
+        20;
+
+
+    window.scrollTo({
+
+        top:
+            Math.max(
+                0,
+                targetTop - offset
+            ),
+
+        behavior:
+            'smooth'
+
+    });
+
+}
+
+
+/* =========================================================
+   CREATE MENU
+   ========================================================= */
+
+function createMenu(){
+
+    /*
+     * Если меню уже существует,
+     * второе не создаём.
+     */
+
+    var existing =
+        document.querySelector(
+            '.vp-category-menu'
+        );
+
+
+    if(existing){
+
+        return existing;
+
+    }
+
+
+    var menu =
+        document.createElement(
+            'div'
+        );
+
+
+    menu.className =
+        'vp-category-menu';
+
+
+    menu.setAttribute(
+        'data-vp-cloudflare-menu',
+        '1'
+    );
+
+
+    var inner =
+        document.createElement(
+            'div'
+        );
+
+
+    inner.className =
+        'vp-category-menu__inner';
+
+
+    CATEGORIES.forEach(
+        function(category,index){
+
+            var button =
+                document.createElement(
+                    'button'
+                );
+
+
+            button.type =
+                'button';
+
+
+            button.className =
+                'vp-category-menu__item';
+
+
+            if(
+                index === 0
+            ){
+
+                button.classList.add(
+                    'is-active'
+                );
+
+            }
+
+
+            if(
+                category.target
+            ){
+
+                button.setAttribute(
+                    'data-target',
+                    category.target
+                );
+
+            }
+
+
+            button.textContent =
+                category.title;
+
+
+            inner.appendChild(
+                button
+            );
+
+        }
+    );
+
+
+    menu.appendChild(
+        inner
+    );
+
+
+    /*
+     * Ставим меню перед #sit.
+     */
+
+    var sit =
+        document.getElementById(
+            'sit'
+        );
+
+
+    if(
+        sit &&
+        sit.parentNode
+    ){
+
+        sit.parentNode.insertBefore(
+            menu,
+            sit
+        );
+
+    }else{
+
+        var allRecords =
+            document.getElementById(
+                'allrecords'
+            );
+
+
+        if(allRecords){
+
+            allRecords.insertBefore(
+                menu,
+                allRecords.firstChild
+            );
+
+        }else{
+
+            document.body.insertBefore(
+                menu,
+                document.body.firstChild
+            );
+
+        }
+
+    }
+
+
+    return menu;
+
+}
+
+
+/* =========================================================
+   RECALCULATE
+   ========================================================= */
+
+function recalculate(){
+
+    if(
+        !state.menu ||
+        state.isFixed
+    ){
+
+        return;
+
+    }
+
+
+    state.menuTop =
+        state.menu
+            .getBoundingClientRect()
+            .top +
+        getScrollY();
+
+
+    state.menuHeight =
+        state.menu.offsetHeight ||
+        64;
+
+
+    if(
+        state.placeholder
+    ){
+
+        state.placeholder.style.height =
+            state.menuHeight +
+            'px';
+
+    }
+
+}
+
+
+/* =========================================================
+   UNFIX
+   ========================================================= */
+
+function unfixMenu(){
+
+    if(
+        !state.menu
+    ){
+
+        return;
+
+    }
+
+
+    state.isFixed =
+        false;
+
+
+    state.menu.classList.remove(
+        'vp-menu-fixed'
+    );
+
+
+    if(
+        state.placeholder
+    ){
+
+        state.placeholder.classList.remove(
+            'vp-placeholder-active'
+        );
+
+
+        state.placeholder.style.height =
+            '0px';
+
+    }
+
+}
+
+
+/* =========================================================
+   STICKY
+   ========================================================= */
+
+function updateSticky(){
+
+    if(
+        !state.menu
+    ){
+
+        return;
+
+    }
+
+
+    /*
+     * =====================================================
+     * STICKY РАБОТАЕТ НА ВСЕХ УСТРОЙСТВАХ.
+     *
+     * Здесь больше НЕТ проверки ширины экрана.
+     * =====================================================
+     */
+
+    if(
+        getScrollY() >=
+        state.menuTop
+    ){
+
+        if(
+            !state.isFixed
+        ){
+
+            state.isFixed =
+                true;
+
+
+            state.menuHeight =
+                state.menu.offsetHeight ||
+                64;
+
+
+            if(
+                state.placeholder
+            ){
+
+                state.placeholder.style.height =
+                    state.menuHeight +
+                    'px';
+
+
+                state.placeholder.classList.add(
+                    'vp-placeholder-active'
+                );
+
+            }
+
+
+            state.menu.classList.add(
+                'vp-menu-fixed'
+            );
+
+        }
+
+
+    }else{
+
+        if(
+            state.isFixed
+        ){
+
+            unfixMenu();
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   SCROLL UPDATE
+   ========================================================= */
+
+function scheduleScrollUpdate(){
+
+    if(
+        state.raf
+    ){
+
+        return;
+
+    }
+
+
+    state.raf =
+        window.requestAnimationFrame(
+            function(){
+
+                state.raf =
+                    0;
+
+
+                updateSticky();
+
+                updateActiveCategory();
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   EVENTS
+   ========================================================= */
+
+function bindEvents(){
+
+    state.items.forEach(
+        function(item){
+
+            if(
+                item.getAttribute(
+                    'data-vp-bound'
+                ) === '1'
+            ){
+
+                return;
+
+            }
+
+
+            item.setAttribute(
+                'data-vp-bound',
+                '1'
+            );
+
+
+            item.addEventListener(
+                'click',
+                handleCategoryClick
+            );
+
+        }
+    );
+
+
+    window.addEventListener(
+        'scroll',
+        scheduleScrollUpdate,
+        {
+            passive: true
+        }
+    );
+
+
+    window.addEventListener(
+        'resize',
+        function(){
+
+            /*
+             * При resize пересчитываем
+             * положение меню.
+             */
+
+            unfixMenu();
+
+
+            setTimeout(
+                function(){
+
+                    recalculate();
+
+                    collectSections();
+
+                    updateSticky();
+
+                    updateActiveCategory();
+
+                },
+                0
+            );
+
+        },
+        {
+            passive: true
+        }
+    );
+
+}
+
+
+/* =========================================================
+   INIT
+   ========================================================= */
+
+function initCategoryMenu(){
+
+    if(
+        state.initialized
+    ){
+
+        return;
+
+    }
+
+
+    var menu =
+        createMenu();
+
+
+    if(
+        !menu
+    ){
+
+        return;
+
+    }
+
+
+    state.menu =
+        menu;
+
+
+    /*
+     * Placeholder сохраняет место,
+     * когда меню становится fixed.
+     */
+
+    state.placeholder =
+        document.createElement(
+            'div'
+        );
+
+
+    state.placeholder.className =
+        'vp-menu-placeholder';
+
+
+    menu.parentNode.insertBefore(
+        state.placeholder,
+        menu
+    );
+
+
+    state.items =
+        Array.prototype.slice.call(
+            menu.querySelectorAll(
+                '.vp-category-menu__item'
+            )
+        );
+
+
+    collectSections();
+
+    recalculate();
+
+    bindEvents();
+
+    updateSticky();
+
+    updateActiveCategory();
+
+
+    state.initialized =
+        true;
+
+}
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+function start(){
+
+    initCategoryMenu();
+
+
+    /*
+     * Tilda может дорисовывать каталог
+     * немного позже.
+     */
+
+    [
+        300,
+        800,
+        1500,
+        2500
+    ].forEach(
+        function(delay){
+
+            setTimeout(
+                function(){
+
+                    collectSections();
+
+                    recalculate();
+
+                    updateSticky();
+
+                    updateActiveCategory();
+
+                },
+                delay
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   DOM READY
+   ========================================================= */
+
+if(
+    document.readyState ===
+    'loading'
+){
+
+    document.addEventListener(
+        'DOMContentLoaded',
+        start
+    );
+
+}else{
+
+    start();
+
+}
+
 })();
