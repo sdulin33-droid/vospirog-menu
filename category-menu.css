@@ -1,8 +1,448 @@
-/* VOSPIROG — CATEGORY MENU */
-.vp-category-menu{width:100%;min-height:64px;background:#fff;box-sizing:border-box;position:relative;z-index:9999}
-.vp-category-menu.vp-menu-fixed{position:fixed!important;top:0!important;left:0!important;width:100%!important;z-index:9999!important;background:#fff!important;box-shadow:0 2px 12px rgba(0,0,0,.08)!important}
-.vp-category-menu__inner{width:100%;max-width:1200px;height:64px;margin:0 auto;padding:0 20px;box-sizing:border-box;display:flex;align-items:center;gap:8px;overflow:hidden;background:#fff}
-.vp-category-menu__item{appearance:none;-webkit-appearance:none;border:0;outline:0;background:transparent;color:#222;height:44px;padding:0 16px;border-radius:22px;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:600;line-height:44px;white-space:nowrap;cursor:pointer;transition:background-color .15s ease,color .15s ease}
-.vp-category-menu__item:hover{background:#f3f3f3}.vp-category-menu__item.is-active{background:#222;color:#fff}.vp-category-menu__item.is-active:hover{background:#222;color:#fff}
-.vp-menu-placeholder{display:none;width:100%}.vp-menu-placeholder.vp-placeholder-active{display:block!important}
-@media(max-width:1099px){.vp-category-menu,.vp-category-menu.vp-menu-fixed{position:relative!important;top:auto!important;left:auto!important;width:100%!important;box-shadow:none!important}.vp-menu-placeholder,.vp-menu-placeholder.vp-placeholder-active{display:none!important}.vp-category-menu__inner{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none}.vp-category-menu__inner::-webkit-scrollbar{display:none}}
+/* =========================================================
+   VOSPIROG — CATEGORY MENU
+   DESKTOP / TABLET / MOBILE
+   ========================================================= */
+
+
+/* =========================================================
+   ОСНОВНОЕ МЕНЮ
+   ========================================================= */
+
+.vp-category-menu {
+
+    width: 100%;
+
+    min-height: 64px;
+
+    background: #fff;
+
+    box-sizing: border-box;
+
+    position: relative;
+
+    z-index: 9000;
+
+}
+
+
+/* =========================================================
+   FIXED DESKTOP
+   ========================================================= */
+
+.vp-category-menu.vp-menu-fixed {
+
+    position: fixed !important;
+
+    top: 0 !important;
+
+    left: 0 !important;
+
+    width: 100% !important;
+
+    z-index: 9000 !important;
+
+    background: #fff !important;
+
+    box-shadow:
+        0 2px 12px rgba(0,0,0,.08) !important;
+
+}
+
+
+/* =========================================================
+   ВНУТРЕННИЙ КОНТЕЙНЕР
+   ========================================================= */
+
+.vp-category-menu__inner {
+
+    width: 100%;
+
+    max-width: 1200px;
+
+    min-height: 64px;
+
+    margin: 0 auto;
+
+    padding: 0 20px;
+
+    padding-right: 120px;
+
+    box-sizing: border-box;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    overflow-x: auto;
+
+    overflow-y: hidden;
+
+    background: #fff;
+
+    scrollbar-width: none;
+
+    -webkit-overflow-scrolling: touch;
+
+}
+
+
+/* убираем scrollbar */
+
+.vp-category-menu__inner::-webkit-scrollbar {
+
+    display: none;
+
+}
+
+
+/* =========================================================
+   КНОПКИ
+   ========================================================= */
+
+.vp-category-menu__item {
+
+    appearance: none;
+
+    -webkit-appearance: none;
+
+    flex: 0 0 auto;
+
+    border: 0;
+
+    outline: 0;
+
+    background: transparent;
+
+    color: #222;
+
+    height: 44px;
+
+    min-height: 44px;
+
+    padding: 0 16px;
+
+    border-radius: 22px;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    line-height: 44px;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    transition:
+        background-color .15s ease,
+        color .15s ease;
+
+    -webkit-tap-highlight-color: transparent;
+
+}
+
+
+/* hover */
+
+.vp-category-menu__item:hover {
+
+    background: #f3f3f3;
+
+}
+
+
+/* active */
+
+.vp-category-menu__item.is-active {
+
+    background: #222;
+
+    color: #fff;
+
+}
+
+
+/* active hover */
+
+.vp-category-menu__item.is-active:hover {
+
+    background: #222;
+
+    color: #fff;
+
+}
+
+
+/* =========================================================
+   PLACEHOLDER ДЛЯ FIXED
+   ========================================================= */
+
+.vp-menu-placeholder {
+
+    display: none;
+
+    width: 100%;
+
+}
+
+
+.vp-menu-placeholder.vp-placeholder-active {
+
+    display: block !important;
+
+}
+
+
+/* =========================================================
+   КОРЗИНА TILDA — ПОВЕРХ МЕНЮ
+   ========================================================= */
+
+
+/*
+ * У Tilda корзина имеет top:50px.
+ *
+ * Меню занимает 0–64px.
+ *
+ * Поэтому поднимаем саму корзину
+ * по z-index выше нашего меню.
+ */
+
+.t706__carticon {
+
+    z-index: 10000 !important;
+
+}
+
+
+/*
+ * Обёртка корзины тоже выше меню.
+ */
+
+.t706__carticon-wrapper {
+
+    z-index: 10001 !important;
+
+}
+
+
+/*
+ * Сам счётчик корзины.
+
+ */
+
+.t706__carticon-counter {
+
+    z-index: 10002 !important;
+
+}
+
+
+/* =========================================================
+   DESKTOP
+   ========================================================= */
+
+@media screen and (min-width: 1100px) {
+
+    .vp-category-menu {
+
+        min-height: 64px;
+
+    }
+
+    .vp-category-menu__inner {
+
+        height: 64px;
+
+        overflow-x: auto;
+
+        overflow-y: hidden;
+
+    }
+
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media screen and (min-width: 641px)
+       and (max-width: 1099px) {
+
+    .vp-category-menu,
+    .vp-category-menu.vp-menu-fixed {
+
+        position: relative !important;
+
+        top: auto !important;
+
+        left: auto !important;
+
+        width: 100% !important;
+
+        box-shadow: none !important;
+
+    }
+
+
+    .vp-menu-placeholder,
+    .vp-menu-placeholder.vp-placeholder-active {
+
+        display: none !important;
+
+    }
+
+
+    .vp-category-menu__inner {
+
+        width: 100%;
+
+        max-width: none;
+
+        min-height: 60px;
+
+        height: 60px;
+
+        padding:
+
+            0 16px 0 16px;
+
+        padding-right: 100px;
+
+        gap: 6px;
+
+    }
+
+
+    .vp-category-menu__item {
+
+        height: 42px;
+
+        min-height: 42px;
+
+        padding: 0 15px;
+
+        border-radius: 21px;
+
+        font-size: 15px;
+
+        line-height: 42px;
+
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media screen and (max-width: 640px) {
+
+    .vp-category-menu,
+    .vp-category-menu.vp-menu-fixed {
+
+        position: relative !important;
+
+        top: auto !important;
+
+        left: auto !important;
+
+        width: 100% !important;
+
+        min-height: 56px;
+
+        box-shadow: none !important;
+
+    }
+
+
+    .vp-menu-placeholder,
+    .vp-menu-placeholder.vp-placeholder-active {
+
+        display: none !important;
+
+    }
+
+
+    .vp-category-menu__inner {
+
+        width: 100%;
+
+        max-width: none;
+
+        min-height: 56px;
+
+        height: 56px;
+
+        padding:
+
+            0 12px 0 12px;
+
+        /*
+         * Справа оставляем место,
+         * чтобы меню визуально не упиралось
+         * в корзину Tilda.
+         */
+
+        padding-right: 92px;
+
+        gap: 5px;
+
+    }
+
+
+    .vp-category-menu__item {
+
+        height: 40px;
+
+        min-height: 40px;
+
+        padding: 0 14px;
+
+        border-radius: 20px;
+
+        font-size: 14px;
+
+        line-height: 40px;
+
+        font-weight: 600;
+
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+   ========================================================= */
+
+@media screen and (max-width: 380px) {
+
+    .vp-category-menu__inner {
+
+        padding-left: 8px;
+
+        padding-right: 82px;
+
+        gap: 4px;
+
+    }
+
+
+    .vp-category-menu__item {
+
+        padding: 0 12px;
+
+        font-size: 13px;
+
+    }
+
+}
